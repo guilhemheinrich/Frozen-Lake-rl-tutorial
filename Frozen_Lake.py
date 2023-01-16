@@ -3,6 +3,7 @@ from gymnasium.utils.play import play
 from gymnasium.envs.toy_text.frozen_lake import generate_random_map
 from PIL import Image
 import numpy as np
+from IPython.display import display # to display images
 
 # from nptyping import NDArray, Shape, Int
 from typing import TypeVar, List, Tuple
@@ -22,13 +23,13 @@ from typing import TypeVar, List, Tuple
 
 environment = gym.make('FrozenLake-v1', desc=None, map_name="4x4", is_slippery=True, render_mode="rgb_array")
 # Playing this interesting game, buggy
-mapping = {
-    (ord('q'),): 0, # LEFT
-    (ord('s'),): 1, # DOWN
-    (ord('d'),): 2, # RIGHT
-    (ord('z'),): 3  # UP
-    }
-play(environment, keys_to_action=mapping)
+# mapping = {
+#     (ord('q'),): 0, # LEFT
+#     (ord('s'),): 1, # DOWN
+#     (ord('d'),): 2, # RIGHT
+#     (ord('z'),): 3  # UP
+#     }
+# play(environment, keys_to_action=mapping)
 
 # Utility functions
 # The coordinate (0, 0) correspond to the top left start cell and the goal to the bottom right
@@ -47,19 +48,14 @@ def stateToCoordinate(index: int) -> Tuple[int, int]:
 
 def coordinateToIndex(row_index: int, col_index: int) -> int:
     check(row_index, col_index)
-    # ! There is a typo in the doc, the agent current position is at current_row * ncols + current_col
+    #! There is a typo in the doc, the agent current position is at current_row * ncols + current_col
     return row_index * ncol + col_index
 
-
-
-environment.reset()
-rgb_array = environment.render()
-Image.fromarray(rgb_array)
-action = 1
-observation, reward, terminated, truncated, info = environment.step(action)
-rgb_array = environment.render()
-Image.fromarray(rgb_array)
-
+def displayGame(environment):
+    rgb_array = environment.render()
+    image = Image.fromarray(rgb_array)
+    display(image)
+    pass
 
 desc=["SFFF", "FHFH", "FFFH", "HFFG"] # Same as the map called "4*4"
 dimension_desc = (4, 4)
@@ -123,11 +119,17 @@ for row_index in range(nrow):
         random_policy[coordinateToIndex(row_index, col_index)] = valid_actions / sum(valid_actions)
 random_policy
 
-environment.reset()
-rgb_array = environment.render()
-Image.fromarray(rgb_array)
+from src.Policy import Policy
+from src.Agent import Agent
+random_policy_object = Policy(random_policy)
+
+
+# Initialisation
+random_agent = Agent(random_policy_object, initial_state_index = 0)
 
 stop = False
+environment.reset()
+displayGame(environment)
 
 while not stop:
     '''
@@ -137,6 +139,11 @@ while not stop:
     Agent update its trajectory: action taken, new state, new reward
     Update the stop condition if Goal reached or terminated
     '''
-    pass
+    next_action_index = random_agent.pickNextAction()
+    observation, reward, terminated, truncated, info = environment.step(next_action_index)
+    random_agent.nextStep(observation, next_action_index, float(reward))
+    stop = terminated or truncated
+    # Render the game
+    displayGame(environment)
 
 
