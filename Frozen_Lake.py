@@ -66,7 +66,7 @@ environment.reset()
 rgb_array = environment.render()
 Image.fromarray(rgb_array)
 
-action = 1
+action = 0
 observation, reward, terminated, truncated, info = environment.step(action)
 rgb_array = environment.render()
 Image.fromarray(rgb_array)
@@ -117,7 +117,7 @@ for row_index in range(nrow):
         # And speed, which may be required at some point
         valid_actions = np.array(possible_action(row_index, col_index))
         random_policy[coordinateToIndex(row_index, col_index)] = valid_actions / sum(valid_actions)
-random_policy
+
 
 from src.Policy import Policy
 from src.Agent import Agent
@@ -125,6 +125,7 @@ random_policy_object = Policy(random_policy)
 
 
 # Initialisation
+
 random_agent = Agent(random_policy_object, initial_state_index = 0)
 
 stop = False
