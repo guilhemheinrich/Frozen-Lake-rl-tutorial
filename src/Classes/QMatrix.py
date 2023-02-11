@@ -2,6 +2,10 @@ from nptyping import NDArray, Shape, Int, Float
 import random
 import numpy as np
 
+# TODO déplacer la logique de sélection (pickNext) dans la class Policy
+# TODO i.e epsilon n'a rien à faire la
+
+# TODO Sous classer la QMatrix, et son update, en SARSA, Q-Learning et MC
 class QMatrix(object):
 
     def __init__(self, initial_qmatrix = np.zeros((10, 3), float), epsilon = 0.2, gamma = 0.9, alpha = 0.7):
@@ -12,6 +16,7 @@ class QMatrix(object):
         self.state_dimension = initial_qmatrix.shape[0]
         self.action_dimension = initial_qmatrix.shape[1]
 
+    # TODO déplacer la logique de sélection (pickNext) dans la class Policy     
     def pickNext(self, state_index: int)-> int:
         assert state_index >= 0 < self.state_dimension
         rand = random.random() # pick a number in [0, 1)

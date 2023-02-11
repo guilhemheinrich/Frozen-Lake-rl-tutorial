@@ -1,7 +1,7 @@
 import numpy as np
 from enum import Enum
-from src.QMatrix import QMatrix
-from src.Agent import Agent
+from src.Classes.QMatrix import QMatrix
+from src.Classes.Agent import Agent
 
 
 class Q_algo(Enum):

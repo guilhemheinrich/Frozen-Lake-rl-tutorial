@@ -4,7 +4,7 @@ from gymnasium.envs.toy_text.frozen_lake import generate_random_map
 from PIL import Image
 import numpy as np
 from IPython.display import display # to display images
-import matplotlib.pyplot as plt
+
 from typing import TypeVar, List, Tuple
 
 # Utility functions
@@ -31,32 +31,27 @@ action_space_length: int = environment.action_space.n
 # Get the observation space
 environment_space_length: int = environment.observation_space.n
 
-# Build our random policy
 
 from src.Classes.Policy import Policy
 from src.Classes.PolicyAgent import PolicyAgent
-random_policy_object = Policy(np.full((environment_space_length, action_space_length), 1 / action_space_length))
+from src.Classes.Trajectory import Trajectory
+
+
 
 # Parameters
-running_agent = 50000
-show = (running_agent == 1) and True # We only show if wanted and there is only one iteration
+trial_number = 5000
+# Build our random policy
+random_policy_object = Policy(np.full((environment_space_length, action_space_length), 1 / action_space_length))
 
+# Observation List
+trajectories: List[Trajectory] = []
 
-# Statistics
-win_count = 0
-win_ratio = []
-truncated_total = 0
+# Generic Initialisation
 
-# Initialisation
-
-
-
-for epoch in range(running_agent):
+for epoch in range(trial_number):
     stop = False
     environment.reset()
     random_agent = PolicyAgent(random_policy_object, initial_state_index = 0)
-
-    if show: displayGame(environment)
     while not stop:
         '''
         While Agent is not stopped
@@ -69,18 +64,31 @@ for epoch in range(running_agent):
         observation, reward, terminated, truncated, info = environment.step(next_action_index)
         random_agent.nextStep(observation, next_action_index, float(reward))
         stop = terminated or truncated
-        if reward == 1: win_count += 1
-        stop = terminated or truncated
-    if epoch % 100 == 0: 
-        print("Done epoch " + str(epoch))
-        print("Win ration is " + str(win_count/100))
-        win_ratio.append(win_count/100)
-        win_count = 0
+    trajectories.append(random_agent.trajectory)
+
+enriched_trajectories = []
+for trajectory in trajectories:
+    enriched_trajectory = trajectory.enrich()
+    enriched_trajectories.append(enriched_trajectory)
+
+# Afficher la récompense de la première étape des trajectoirs "enrichies"
+[print(trajectory.steps[0].reward) for trajectory in enriched_trajectories]
+for trajectory in enriched_trajectories:
+    reward_total = sum([step.reward for step in trajectory.steps])
+    if reward_total > 1:
+        # print(reward_total)
+        pass
 
 
-%matplotlib inline
-plt.plot(win_ratio)
-half = int(len(win_ratio) / 2)
-# Get the mean only after the second half, to account for the warmup
-print("Mean success on second half: " + str(np.mean(win_ratio[- half:])))
-print("Mean truncated on all episode: " + str(truncated_total/running_agent))
+success_indexes: List[int] = []
+index = 0
+for trajectory in trajectories:
+    if trajectory.steps[-1].reward == 1:
+        success_indexes.append(index)
+    index += 1
+
+successful_trajectory = enriched_trajectories[success_indexes[1]]
+print(str(trajectories[success_indexes[1]]))
+print(str(successful_trajectory))
+
+

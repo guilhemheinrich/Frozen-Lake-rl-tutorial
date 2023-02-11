@@ -32,26 +32,27 @@ action_space_length: int = environment.action_space.n
 environment_space_length: int = environment.observation_space.n
 
 
-from src.Policy import Policy
-from src.PolicyAgent import PolicyAgent
-from src.Trajectory import Trajectory
+from src.Classes.Policy import Policy
+from src.Classes.PolicyAgent import PolicyAgent
+from src.Classes.Trajectory import Trajectory
+from src.Classes.QMatrix_MC import QMatrix_MC
 
 
 
 # Parameters
-running_agent = 5000
+trial_number = 50000
 # Build our random policy
-random_policy_object = Policy(np.full((environment_space_length, action_space_length), 1 / action_space_length))
-
+random_policy = Policy(np.full((environment_space_length, action_space_length), 1 / action_space_length))
+Q_sa = QMatrix_MC(np.zeros((environment_space_length, action_space_length)))
 # Observation List
 trajectories: List[Trajectory] = []
 
 # Generic Initialisation
 
-for epoch in range(running_agent):
+for epoch in range(trial_number):
     stop = False
     environment.reset()
-    random_agent = PolicyAgent(random_policy_object, initial_state_index = 0)
+    random_agent = PolicyAgent(random_policy, initial_state_index = 0)
     while not stop:
         '''
         While Agent is not stopped
@@ -64,32 +65,21 @@ for epoch in range(running_agent):
         observation, reward, terminated, truncated, info = environment.step(next_action_index)
         random_agent.nextStep(observation, next_action_index, float(reward))
         stop = terminated or truncated
-    # 
     trajectories.append(random_agent.trajectory)
 
-# enriched_trajectories = [trajectory.enrich() for trajectory in trajectories]
 enriched_trajectories = []
 for trajectory in trajectories:
-    enriched_trajectoriy = trajectory.enrich()
-    enriched_trajectories.append(enriched_trajectoriy)
+    for step in trajectory.steps:
+        Q_sa.increment(step.state, step.action, trajectory.steps[-1].reward)
 
-[print(trajectory.steps[0].reward) for trajectory in enriched_trajectories]
-for trajectory in enriched_trajectories:
-    reward_total = sum([step.reward for step in trajectory.steps])
-    if reward_total > 1:
-        # print(reward_total)
-        pass
+deterministic_policy = Policy.buildOptimalPolicyFrom(Q_sa.value)
+policy_agent = PolicyAgent(deterministic_policy, initial_state_index = 0)
 
+from src.Functions.Run import FrozenLake_parameters, run
 
-success_indexes: List[int] = []
-index = 0
-for trajectory in trajectories:
-    if trajectory.steps[-1].reward == 1:
-        success_indexes.append(index)
-    index += 1
+# frozenLake_parameters = {'desc' : ["SFFF", "FHFH", "FFFH", "HFFG"], 'is_slippery'  : True}
+frozenLake_parameters: FrozenLake_parameters = {'desc' : ["SFFF", "FHFH", "FFFH", "HFFG"], 'is_slippery'  : True}
 
-successful_trajectory = enriched_trajectories[success_indexes[1]]
-print(str(trajectories[success_indexes[1]]))
-print(str(successful_trajectory))
+run(frozenLake_parameters, policy_agent)
 
 

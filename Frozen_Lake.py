@@ -119,8 +119,8 @@ for row_index in range(nrow):
         random_policy[coordinateToIndex(row_index, col_index)] = valid_actions / sum(valid_actions)
 
 
-from src.Policy import Policy
-from src.Agent import Agent
+from src.Classes.Policy import Policy
+from src.Classes.Agent import Agent
 random_policy_object = Policy(random_policy)
 
 

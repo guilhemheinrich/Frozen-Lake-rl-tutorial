@@ -1,7 +1,7 @@
 import numpy as np
 from abc import ABC, abstractmethod
-from src.Trajectory import Trajectory
-from src.Policy import Policy
+from src.Classes.Trajectory import Trajectory
+from src.Classes.Policy import Policy
 
    
 class Agent(ABC):

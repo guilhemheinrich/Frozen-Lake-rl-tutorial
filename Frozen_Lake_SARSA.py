@@ -6,9 +6,9 @@ import numpy as np
 from IPython.display import display # to display images
 import matplotlib.pyplot as plt
 
-from typing import TypeVar, List, Tuple
-from src.Policy import Policy
-from src.PolicyAgent import PolicyAgent
+from typing import TypeVar, List, Tuple, TypedDict
+from src.Classes.Policy import Policy
+from src.Classes.PolicyAgent import PolicyAgent
 
 def check(row_index: int, col_index: int) -> None:
     assert 0 <= row_index < nrow
@@ -20,7 +20,18 @@ def stateToCoordinate(index: int) -> Tuple[int, int]:
     check(row_index, col_index)
     return (row_index, col_index)
 
-def displayGame(environment):
+def displayGame(environment, action = -1):
+    match action:
+        case 0:
+            print('LEFT !')
+        case 1:
+            print('DOWN !')
+        case 2:
+            print('RIGHT !')
+        case 3:
+            print('UP !')
+        case _:
+            print('Start')
     rgb_array = environment.render()
     image = Image.fromarray(rgb_array)
     display(image)
@@ -39,9 +50,9 @@ action_space_length: int = environment.action_space.n
 # Get the observation space
 environment_space_length: int = environment.observation_space.n
 
-from src.QMatrix import QMatrix
-from src.QAgent import Q_algo, QAgent
-from src.QAgent import QAgent
+from src.Classes.QMatrix import QMatrix
+from src.Classes.QAgent import Q_algo, QAgent
+from src.Classes.QAgent import QAgent
 
 # Parameters
 running_agent = 10000
@@ -67,7 +78,6 @@ for epoch in range(running_agent):
     environment.reset()
     SARSA_agent = QAgent(Q_sa, initial_state_index = 0, algo = Q_algo.SARSA)
     current_state = SARSA_agent.current_state_index
-    if show: displayGame(environment)
     action = SARSA_agent.pickNextAction(current_state)
     while not stop:
         '''
@@ -78,7 +88,6 @@ for epoch in range(running_agent):
         Update the stop condition if Goal reached or terminated
         '''
         observation, reward, terminated, truncated, info = environment.step(action)
-        if show: displayGame(environment)
         next_action = SARSA_agent.pickNextAction(observation)
         SARSA_agent.current_state_index = observation
         # qsa_footprint = np.sum(Q_sa.value)      
@@ -107,26 +116,35 @@ print("Mean truncated on all episode: " + str(truncated_total/running_agent))
 
 show = True
 
-deterministic_policy = np.zeros(((environment_space_length, action_space_length)))
-for state_index in range(Q_sa.value.shape[0]):
-    action_max = np.argmax(Q_sa.value[state_index])
-    deterministic_policy[state_index, action_max] = 1.0
+# deterministic_policy = np.zeros(((environment_space_length, action_space_length)))
+# for state_index in range(Q_sa.value.shape[0]):
+#     action_max = np.argmax(Q_sa.value[state_index])
+#     deterministic_policy[state_index, action_max] = 1.0
+deterministic_policy = Policy.buildOptimalPolicyFrom(Q_sa.value)
 
-stop = False
-environment.reset()
-policy_agent = PolicyAgent(Policy(deterministic_policy), initial_state_index = 0)
-current_state = policy_agent.current_state_index
-if show: displayGame(environment)
-while not stop:
-    '''
-    While Agent is not stopped
-    Agent perform the action
-    Agent pick an action from its state and its policy
-    Agent update its trajectory: action taken, new state, new reward
-    Update the stop condition if Goal reached or terminated
-    '''
-    next_action_index = policy_agent.pickNextAction()
-    observation, reward, terminated, truncated, info = environment.step(next_action_index)
-    if show: displayGame(environment)
-    policy_agent.nextStep(observation, next_action_index, float(reward))
-    stop = terminated or truncated
+policy_agent = PolicyAgent(deterministic_policy, initial_state_index = 0)
+
+from src.Functions.Run import FrozenLake_parameters, run
+
+# frozenLake_parameters = {'desc' : ["SFFF", "FHFH", "FFFH", "HFFG"], 'is_slippery'  : True}
+frozenLake_parameters: FrozenLake_parameters = {'desc' : ["SFFF", "FHFH", "FFFH", "HFFG"], 'is_slippery'  : True}
+
+run(frozenLake_parameters, policy_agent)
+
+# stop = False
+# environment.reset()
+# current_state = policy_agent.current_state_index
+# if show: displayGame(environment)
+# while not stop:
+#     '''
+#     While Agent is not stopped
+#     Agent perform the action
+#     Agent pick an action from its state and its policy
+#     Agent update its trajectory: action taken, new state, new reward
+#     Update the stop condition if Goal reached or terminated
+#     '''
+#     next_action_index = policy_agent.pickNextAction()
+#     observation, reward, terminated, truncated, info = environment.step(next_action_index)
+#     if show: displayGame(environment, next_action_index)
+#     policy_agent.nextStep(observation, next_action_index, float(reward))
+#     stop = terminated or truncated

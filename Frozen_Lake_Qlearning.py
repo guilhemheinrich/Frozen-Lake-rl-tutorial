@@ -25,9 +25,9 @@ action_space_length: int = environment.action_space.n
 # Get the observation space
 environment_space_length: int = environment.observation_space.n
 
-from src.QMatrix import QMatrix
-from src.QAgent import Q_algo, QAgent
-from src.QAgent import QAgent
+from src.Classes.QMatrix import QMatrix
+from src.Classes.QAgent import Q_algo, QAgent
+from src.Classes.QAgent import QAgent
 
 # Parameters
 running_agent = 10000

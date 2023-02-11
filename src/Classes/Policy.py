@@ -5,6 +5,7 @@ import numpy as np
 # StateDimension = TypeVar('StateDimension')
 # ActionDimension = TypeVar('ActionDimension')
 
+# TODO ajouter la epsilon greedy policy
 class Policy(object):
 
     def __init__(self, policy_array: NDArray[Shape['StateDimension, ActionDimension'], Float]):
@@ -21,6 +22,17 @@ class Policy(object):
         # print(np.searchsorted(np.cumsum(action_subset), rand))
         # print(int(np.argmax(rand < np.cumsum(action_subset))))
         return(int(np.searchsorted(np.cumsum(action_subset), rand)))
+    
+    @staticmethod
+    def buildOptimalPolicyFrom(Q_sa: NDArray[Shape['StateDimension, ActionDimension'], Float]):
+        state_dimension = Q_sa.shape[0]
+        action_dimension = Q_sa.shape[1]
+        deterministic_policy = np.zeros(((state_dimension, action_dimension)))
+        for state_index in range(Q_sa.shape[0]):
+            action_max = np.argmax(Q_sa[state_index])
+            deterministic_policy[state_index, action_max] = 1.0
+        return Policy(deterministic_policy)
+        
 
 
 

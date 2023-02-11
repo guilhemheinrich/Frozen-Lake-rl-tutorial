@@ -1,7 +1,7 @@
 import numpy as np
-from src.Trajectory import Trajectory
-from src.Policy import Policy
-from src.Agent import Agent
+from src.Classes.Trajectory import Trajectory
+from src.Classes.Policy import Policy
+from src.Classes.Agent import Agent
 
    
 class PolicyAgent(Agent):
