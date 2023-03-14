@@ -29,6 +29,54 @@ from src.Classes.QMatrix import QMatrix
 from src.Classes.QAgent import Q_algo, QAgent
 from src.Classes.QAgent import QAgent
 
+
+def Q_learning(environment, epoch_number = 10000, epsilon = 0.1, alpha = 0.1, gamma = 0.99):
+    # Statistics
+    win_count = 0
+    win_ratio = []
+    truncated_total = 0
+
+    # Generic Initialisation
+    Q_sa = QMatrix(
+        np.zeros((environment_space_length, action_space_length)),
+        epsilon,
+        gamma, 
+        alpha)
+
+    for epoch in range(epoch_number):
+        stop = False
+        initial_state, info = environment.reset()
+        Qlearn_agent = QAgent(Q_sa, initial_state_index = initial_state, algo = Q_algo.Qlearning)
+        current_state = Qlearn_agent.current_state_index
+        while not stop:
+            '''
+            While Agent is not stopped
+            Agent perform the action
+            Agent pick an action from its state and its policy
+            Agent update its trajectory: action taken, new state, new reward
+            Update the stop condition if Goal reached or terminated
+            '''
+            next_action = Qlearn_agent.pickNextAction(current_state)
+            observation, reward, terminated, truncated, info = environment.step(next_action)
+            new_reward = reward
+            # if reward != 1 and terminated:
+            #     new_reward = -1
+            if show: displayGame(environment)
+            # qsa_footprint = np.sum(Q_sa.value)      
+            Q_sa.update_Qlearning(current_state, next_action, observation, new_reward)
+            # if qsa_footprint != np.sum(Q_sa.value): displayGame(environment)
+            current_state = observation
+            if reward == 1: win_count += 1
+            stop = terminated or truncated
+            if truncated: truncated_total += 1
+        if epoch % 100 == 0: 
+            # print("Done epoch " + str(epoch))
+            # print("Win ration is " + str(win_count/100))
+            win_ratio.append(win_count/100)
+            win_count = 0
+
+    pass
+
 # Parameters
 running_agent = 10000
 show = (running_agent == 1) and True # We only show if wanted and there is only one iteration

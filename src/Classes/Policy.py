@@ -19,8 +19,6 @@ class Policy(object):
         rand = random.random()
         action_subset = self.policy_array[state_index, ]
         # See https://stackoverflow.com/questions/16243955/numpy-first-occurrence-of-value-greater-than-existing-value
-        # print(np.searchsorted(np.cumsum(action_subset), rand))
-        # print(int(np.argmax(rand < np.cumsum(action_subset))))
         return(int(np.searchsorted(np.cumsum(action_subset), rand)))
     
     @staticmethod

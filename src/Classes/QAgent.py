@@ -2,7 +2,7 @@ import numpy as np
 from enum import Enum
 from src.Classes.QMatrix import QMatrix
 from src.Classes.Agent import Agent
-
+import random
 
 class Q_algo(Enum):
     SARSA = 'SARSA'
@@ -34,4 +34,3 @@ class QAgent(Agent):
         self.trajectory.append(state_index, action_index, reward)
         self.current_state_index = state_index
         pass
-    
