@@ -39,6 +39,6 @@ class QMatrix(object):
 
     def update_Qlearning(self, state_index, action_index, next_state, reward: float = 0):
         # Q[s, a] := Q[s, a] + α[r + γ . argmax_a {Q(s', a')} - Q(s, a)]
-        next_action = np.argmax(self.value[state_index, ])
+        next_action = np.argmax(self.value[next_state, ])
         self.value[state_index, action_index] = self.value[state_index, action_index] + self.alpha * (reward + self.gamma * self.value[next_state, next_action] - self.value[state_index, action_index])
 

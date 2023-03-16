@@ -21,7 +21,7 @@ def Q_learning(environment, epsilon = 0.1, alpha = 0.1, gamma = 0.99, epoch_numb
     )
     def update_Qlearning(policy: Policy, state_index, action_index, next_state, reward: float = 0):
         # Q[s, a] := Q[s, a] + α[r + γ . argmax_a {Q(s', a')} - Q(s, a)]
-        best_next_action = np.argmax(Q_sa[state_index, ])
+        best_next_action = np.argmax(Q_sa[next_state, ])
         Q_sa[state_index, action_index] = Q_sa[state_index, action_index] + alpha * (reward + gamma * Q_sa[next_state, best_next_action] - Q_sa[state_index, action_index])
 
 

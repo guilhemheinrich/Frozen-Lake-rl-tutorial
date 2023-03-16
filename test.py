@@ -27,19 +27,19 @@ desc=["SFFF", "FHFH", "FFFH", "HFFG"] # Same as the map called "4*4"
 environment = gym.make('FrozenLake-v1', desc=desc, is_slippery=True, render_mode="rgb_array")
 
 print("Learning phase")
-print("SARSA V1\n")
+print("SARSA V1")
 random.seed(seed)
 environment.reset(seed=seed)
 q_sa1 = SARSA_V1(environment, **options)
-print("\n\nSARSA V2\n")
+print("\nSARSA V2")
 random.seed(seed)
 environment.reset(seed=seed)
 q_sa2 = SARSA_V2(environment, **options)
-print("\n\nQ learning V1\n")
+print("\nQ learning V1")
 random.seed(seed)
 environment.reset(seed=seed)
 q_sa3 = Q_learning_V1(environment, **options)
-print("\n\nQ learning V2\n")
+print("\nQ learning V2")
 random.seed(seed)
 environment.reset(seed=seed)
 q_sa4 = Q_learning_V2(environment, **options)
@@ -47,9 +47,9 @@ q_sa4 = Q_learning_V2(environment, **options)
 
 frozenLake_parameters: FrozenLake_parameters = {'desc' : ["SFFF", "FHFH", "FFFH", "HFFG"], 'is_slippery'  : True}
 
-print("\n\nTest phase")
+print("\nTest phase")
 success = 0
-print("SARSA V1\n")
+print("SARSA V1")
 
 random.seed(seed)
 environment.reset(seed=seed)
@@ -60,7 +60,7 @@ for epoch in range(test_epoch):
     success += test_agent_v1.current_state_index == (environment.observation_space.n - 1) # type: ignore
 print("Success rate: " + str(success/test_epoch))
 
-print("\n\nSARSA V2\n")
+print("\nSARSA V2")
 
 success = 0
 random.seed(seed)
@@ -72,7 +72,7 @@ for epoch in range(test_epoch):
     success += test_agent_SARSA_V2.current_state_index == (environment.observation_space.n - 1) # type: ignore
 print("Success rate: " + str(success/test_epoch))
 
-print("\n\nQ learning V1\n")
+print("\nQ learning V1")
 
 success = 0
 random.seed(seed)
@@ -85,7 +85,7 @@ for epoch in range(test_epoch):
     success += test_agent_QL_v1.current_state_index == (environment.observation_space.n - 1) # type: ignore
 print("Success rate: " + str(success/test_epoch))
 
-print("\n\nQ learning V2\n")
+print("\nQ learning V2")
 success = 0
 random.seed(seed)
 environment.reset(seed=seed)
