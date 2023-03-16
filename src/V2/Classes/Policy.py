@@ -22,15 +22,16 @@ class Policy(object):
     #     # See https://stackoverflow.com/questions/16243955/numpy-first-occurrence-of-value-greater-than-existing-value
     #     return(int(np.searchsorted(np.cumsum(action_subset), rand)))
     
-    # @staticmethod
-    # def buildOptimalPolicyFrom(Q_sa: NDArray[Shape['StateDimension, ActionDimension'], Float]):
-    #     state_dimension = Q_sa.shape[0]
-    #     action_dimension = Q_sa.shape[1]
-    #     deterministic_policy = np.zeros(((state_dimension, action_dimension)))
-    #     for state_index in range(Q_sa.shape[0]):
-    #         action_max = np.argmax(Q_sa[state_index])
-    #         deterministic_policy[state_index, action_max] = 1.0
-    #     return Policy(deterministic_policy)
+    @staticmethod
+    def buildOptimalPolicyFrom(Q_sa: NDArray[Shape['StateDimension, ActionDimension'], Float]):
+        state_dimension = Q_sa.shape[0]
+        action_dimension = Q_sa.shape[1]
+        deterministic_policy = Policy(
+            lambda policy, state: int(np.argmax(Q_sa[state])),
+            state_dimension,
+            action_dimension
+        )
+        return deterministic_policy
         
 
 

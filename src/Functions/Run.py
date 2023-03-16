@@ -35,7 +35,7 @@ def run(frozenLake_parameters: FrozenLake_parameters, agent: PolicyAgent):
     environment = gym.make('FrozenLake-v1', desc=frozenLake_parameters['desc'], is_slippery=frozenLake_parameters['is_slippery'], render_mode="rgb_array")
     stop = False
     environment.reset()
-    displayGame(environment)
+    # displayGame(environment)
     while not stop:
         '''
         While Agent is not stopped
@@ -46,6 +46,7 @@ def run(frozenLake_parameters: FrozenLake_parameters, agent: PolicyAgent):
         '''
         next_action_index = agent.pickNextAction()
         observation, reward, terminated, truncated, info = environment.step(next_action_index)
-        displayGame(environment, next_action_index)
+        # displayGame(environment, next_action_index)
         agent.nextStep(observation, next_action_index, float(reward))
         stop = terminated or truncated
+    return agent

@@ -23,7 +23,7 @@ class Trajectory(Generic[State, Action]):
     def append(self, state_index: int, action_index: int, reward: float = 0):
         self.steps.append(Step(state_index, action_index, reward))
     
-    def appendStep(self, step: Step):
+    def append_step(self, step: Step):
         self.steps.append(Step(step.state, step.action, step.reward))
 
     def __str__(self):
@@ -37,12 +37,12 @@ class Trajectory(Generic[State, Action]):
         enriched_trajectory = Trajectory()
         # Initialisation
         current_step = copy.deepcopy(self.steps[-1])
-        enriched_trajectory.appendStep(current_step)
+        enriched_trajectory.append_step(current_step)
         previous_reward = current_step.reward
         for step in self.steps[-2::-1]:
             current_step = copy.deepcopy(step)
             current_step.reward = (1 - alpha) * current_step.reward + alpha * gamma * previous_reward
-            enriched_trajectory.appendStep(current_step)
+            enriched_trajectory.append_step(current_step)
             previous_reward = current_step.reward
         enriched_trajectory.steps = enriched_trajectory.steps[::-1]
         return enriched_trajectory

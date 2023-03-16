@@ -162,17 +162,20 @@ show = True
 # for state_index in range(Q_sa.value.shape[0]):
 #     action_max = np.argmax(Q_sa.value[state_index])
 #     deterministic_policy[state_index, action_max] = 1.0
-Q_sa = SARSA(environment, epoch_number = 10000, epsilon = 0.1, alpha = 0.1, gamma = 0.99)
-deterministic_policy = Policy.buildOptimalPolicyFrom(Q_sa.value)
+# import random
+# random.seed(10)
+# print(random.random())
+# Q_sa = SARSA(environment, epoch_number = 3, epsilon = 0.1, alpha = 0.1, gamma = 0.99)
+# deterministic_policy = Policy.buildOptimalPolicyFrom(Q_sa.value)
 
-policy_agent = PolicyAgent(deterministic_policy, initial_state_index = 0)
+# policy_agent = PolicyAgent(deterministic_policy, initial_state_index = 0)
 
 from src.Functions.Run import FrozenLake_parameters, run
 
 # frozenLake_parameters = {'desc' : ["SFFF", "FHFH", "FFFH", "HFFG"], 'is_slippery'  : True}
 frozenLake_parameters: FrozenLake_parameters = {'desc' : ["SFFF", "FHFH", "FFFH", "HFFG"], 'is_slippery'  : True}
 
-run(frozenLake_parameters, policy_agent)
+# run(frozenLake_parameters, policy_agent)
 
 # stop = False
 # environment.reset()
