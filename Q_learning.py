@@ -8,7 +8,7 @@ from src.V2.Functions.epsilon_greedy_policy_factory import make_epsilon_greedy_p
 desc=["SFFF", "FHFH", "FFFH", "HFFG"] # Same as the map called "4*4"
 environment = gym.make('FrozenLake-v1', desc=desc, is_slippery=True, render_mode="rgb_array")
 
-def SARSA(environment, epsilon = 0.1, alpha = 0.1, gamma = 0.99, epoch_number = 8000):
+def Q_learning(environment, epsilon = 0.1, alpha = 0.1, gamma = 0.99, epoch_number = 8000):
     # Get the observation space & the action space
     environment_space_length: int = environment.observation_space.n # type: ignore
     action_space_length: int = environment.action_space.n # type: ignore
@@ -19,15 +19,15 @@ def SARSA(environment, epsilon = 0.1, alpha = 0.1, gamma = 0.99, epoch_number = 
         environment_space_length,
         action_space_length
     )
-    def update_SARSA(policy: Policy, state_index: int, action_index: int, next_state: int, next_action: int,  reward:float = 0.0):
-        # Q[s, a] := Q[s, a] + α[r + γQ(s', a') - Q(s, a)]
-        Q_sa[state_index, action_index] = Q_sa[state_index, action_index] + alpha * (reward + gamma * Q_sa[next_state, next_action] - Q_sa[state_index, action_index])
-        # if Q_sa[state_index, action_index] != Q_sa[state_index, action_index] + alpha * (reward + gamma * Q_sa[next_state, next_action] - Q_sa[state_index, action_index]):
-        #     print(Q_sa[state_index, action_index] + alpha * (reward + gamma * Q_sa[next_state, next_action] - Q_sa[state_index, action_index]))
+    def update_Qlearning(policy: Policy, state_index, action_index, next_state, reward: float = 0):
+        # Q[s, a] := Q[s, a] + α[r + γ . argmax_a {Q(s', a')} - Q(s, a)]
+        best_next_action = np.argmax(Q_sa[state_index, ])
+        Q_sa[state_index, action_index] = Q_sa[state_index, action_index] + alpha * (reward + gamma * Q_sa[next_state, best_next_action] - Q_sa[state_index, action_index])
+
 
 
     for epoch in range(epoch_number):
-        learning_agent = Agent(epsilon_greedy_policy, update_SARSA)
+        learning_agent = Agent(epsilon_greedy_policy, update_Qlearning)
         learning_agent.current_state_index = environment.reset()[0] # Initial state
         stop = False
         action = learning_agent.pick_next()
@@ -46,15 +46,11 @@ def SARSA(environment, epsilon = 0.1, alpha = 0.1, gamma = 0.99, epoch_number = 
                 learning_agent.current_state_index,
                 action,
                 observation,
-                next_action_index,
                 reward)
             learning_agent.current_state_index = observation
             action = next_action_index
             stop = terminated or truncated
-
-    # TODO Add some statistics
     return Q_sa
-
 
 
 

@@ -94,7 +94,7 @@ def SARSA(environment, epoch_number = 10000, epsilon = 0.1, alpha = 0.1, gamma =
             # print("Win ration is " + str(win_count/100))
             win_ratio.append(win_count/100)
             win_count = 0
-    return Q_sa
+    return Q_sa.value
 
 # # Parameters
 # running_agent = 10000
