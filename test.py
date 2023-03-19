@@ -58,6 +58,7 @@ for epoch in range(test_epoch):
     test_agent_v1 = PolicyAgent(deterministic_policy, initial_state_index = 0)
     run(frozenLake_parameters, test_agent_v1)
     success += test_agent_v1.current_state_index == (environment.observation_space.n - 1) # type: ignore
+print("check random seed: " + str(random.random()))
 print("Success rate: " + str(success/test_epoch))
 
 print("\nSARSA V2")
@@ -70,6 +71,7 @@ for epoch in range(test_epoch):
     test_agent_SARSA_V2 = Agent(deterministic_policy)
     run_static(environment = environment, agent = test_agent_SARSA_V2)
     success += test_agent_SARSA_V2.current_state_index == (environment.observation_space.n - 1) # type: ignore
+print("check random seed: " + str(random.random()))
 print("Success rate: " + str(success/test_epoch))
 
 print("\nQ learning V1")
@@ -83,6 +85,7 @@ for epoch in range(test_epoch):
     test_agent_QL_v1 = PolicyAgent(deterministic_policy, initial_state_index = 0)
     run(frozenLake_parameters, agent = test_agent_QL_v1)
     success += test_agent_QL_v1.current_state_index == (environment.observation_space.n - 1) # type: ignore
+print("check random seed: " + str(random.random()))
 print("Success rate: " + str(success/test_epoch))
 
 print("\nQ learning V2")
@@ -94,4 +97,5 @@ for epoch in range(test_epoch):
     test_agent_QL_v2 = Agent(deterministic_policy)
     run_static(environment = environment, agent = test_agent_QL_v2)
     success += test_agent_QL_v2.current_state_index == (environment.observation_space.n - 1) # type: ignore
+print("check random seed: " + str(random.random()))
 print("Success rate: " + str(success/test_epoch))
