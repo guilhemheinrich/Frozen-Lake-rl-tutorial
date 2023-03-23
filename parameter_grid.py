@@ -20,7 +20,7 @@ from src.V2.Functions.run import run_static
 #                               | |                                 __/ |                                  
 #                               |_|                                |___/                                  
 
-output_file = "data/fat_grid_2.json"
+output_file = "data/output.json"
 
 #     _____      _     _       _____             __ _                       _   _             
 #    / ____|    (_)   | |     / ____|           / _(_)                     | | (_)            
@@ -43,7 +43,7 @@ mail = {
         "end": 0.98,
         "steps": grid_steps,
     },
-    "beta": {
+    "alpha": {
         "start": 0.1,
         "end": 0.98,
         "steps": grid_steps,
@@ -81,7 +81,7 @@ result = []
 cpt = 0
 for epoch_number in np.linspace(mail["epoch_number"]["start"], mail["epoch_number"]["end"], mail["epoch_number"]["steps"]):
     for epsilon in np.linspace(mail["epsilon"]["start"], mail["epsilon"]["end"], mail["epsilon"]["steps"]):
-        for alpha in np.linspace(mail["beta"]["start"], mail["beta"]["end"], mail["beta"]["steps"]):
+        for alpha in np.linspace(mail["alpha"]["start"], mail["alpha"]["end"], mail["alpha"]["steps"]):
             for gamma in np.linspace(mail["gamma"]["start"], mail["gamma"]["end"], mail["gamma"]["steps"]):
                 options = {
                     "epoch_number": int(epoch_number), 
@@ -118,7 +118,7 @@ for epoch_number in np.linspace(mail["epoch_number"]["start"], mail["epoch_numbe
                         json_object = json.dumps(result, indent=4)
                         the_file.write(json_object)
                     cpt += 1
-                    print(str(cpt) + "/" + str(mail["beta"]["steps"] * mail["gamma"]["steps"] * mail["epsilon"]["steps"] * mail["epoch_number"]["steps"] * 2))
+                    print(str(cpt) + "/" + str(mail["alpha"]["steps"] * mail["gamma"]["steps"] * mail["epsilon"]["steps"] * mail["epoch_number"]["steps"] * 2))
                 pass
 
 

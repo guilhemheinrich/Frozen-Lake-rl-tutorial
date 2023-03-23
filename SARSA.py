@@ -50,8 +50,6 @@ def SARSA(environment, epsilon = 0.1, alpha = 0.1, gamma = 0.99, epoch_number = 
             learning_agent.current_state_index = observation
             action = next_action_index
             stop = terminated or truncated
-
-    # TODO Add some statistics
     return Q_sa
 
 
