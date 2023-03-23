@@ -1,6 +1,8 @@
 import random
 import gymnasium as gym
+from nptyping import Float, NDArray, Shape
 import numpy as np
+import json
 
 from SARSA import SARSA
 from Q_learning import Q_learning
@@ -9,13 +11,35 @@ from src.V2.Classes.Policy import Policy
 from src.V2.Classes.Agent import Agent
 from src.V2.Functions.run import run_static
 
-seed = 0
-epoch_number = 100
+#    ____             _                     _____             __ _                       _   _             
+#   |  _ \           | |                   / ____|           / _(_)                     | | (_)            
+#   | |_) | __ _  ___| | ___   _ _ __     | |     ___  _ __ | |_ _  __ _ _   _ _ __ __ _| |_ _  ___  _ __  
+#   |  _ < / _` |/ __| |/ / | | | '_ \    | |    / _ \| '_ \|  _| |/ _` | | | | '__/ _` | __| |/ _ \| '_ \ 
+#   | |_) | (_| | (__|   <| |_| | |_) |   | |___| (_) | | | | | | | (_| | |_| | | | (_| | |_| | (_) | | | |
+#   |____/ \__,_|\___|_|\_\\__,_| .__/     \_____\___/|_| |_|_| |_|\__, |\__,_|_|  \__,_|\__|_|\___/|_| |_|
+#                               | |                                 __/ |                                  
+#                               |_|                                |___/                                  
+
+output_file = "data/fat_grid_2.json"
+
+#     _____      _     _       _____             __ _                       _   _             
+#    / ____|    (_)   | |     / ____|           / _(_)                     | | (_)            
+#   | |  __ _ __ _  __| |    | |     ___  _ __ | |_ _  __ _ _   _ _ __ __ _| |_ _  ___  _ __  
+#   | | |_ | '__| |/ _` |    | |    / _ \| '_ \|  _| |/ _` | | | | '__/ _` | __| |/ _ \| '_ \ 
+#   | |__| | |  | | (_| |    | |___| (_) | | | | | | | (_| | |_| | | | (_| | |_| | (_) | | | |
+#    \_____|_|  |_|\__,_|     \_____\___/|_| |_|_| |_|\__, |\__,_|_|  \__,_|\__|_|\___/|_| |_|
+#                                                      __/ |                                  
+#                                                     |___/                                  
 test_epoch = 100
-grid_steps = 3
+grid_steps = 8
 mail = {
+    "epoch_number":{
+        "start": 2000,
+        "end": 8000,
+        "steps": grid_steps,
+    },
     "epsilon": {
-        "start": 0.1,
+        "start": 0.5,
         "end": 0.98,
         "steps": grid_steps,
     },
@@ -25,61 +49,79 @@ mail = {
         "steps": grid_steps,
     },
     "gamma": {
-        "start": 0.1,
+        "start": 0.8,
         "end": 0.98,
         "steps": grid_steps,
     },
 }
-result = []
-desc=["SFFF", "FHFH", "FFFH", "HFFG"] # Same as the map called "4*4"
+seed = 0
 
+#    ______            _                                      _         _____             __ _                       _   _             
+#   |  ____|          (_)                                    | |       / ____|           / _(_)                     | | (_)            
+#   | |__   _ ____   ___ _ __ ___  _ __  _ __ ___   ___ _ __ | |_     | |     ___  _ __ | |_ _  __ _ _   _ _ __ __ _| |_ _  ___  _ __  
+#   |  __| | '_ \ \ / / | '__/ _ \| '_ \| '_ ` _ \ / _ \ '_ \| __|    | |    / _ \| '_ \|  _| |/ _` | | | | '__/ _` | __| |/ _ \| '_ \ 
+#   | |____| | | \ V /| | | | (_) | | | | | | | | |  __/ | | | |_     | |___| (_) | | | | | | | (_| | |_| | | | (_| | |_| | (_) | | | |
+#   |______|_| |_|\_/ |_|_|  \___/|_| |_|_| |_| |_|\___|_| |_|\__|     \_____\___/|_| |_|_| |_|\__, |\__,_|_|  \__,_|\__|_|\___/|_| |_|
+#                                                                                               __/ |                                  
+#                                                                                              |___/                                  
+desc=["SFFF", "FHFH", "FFFH", "HFFG"] # Same as the map called "4*4"
 environment = gym.make('FrozenLake-v1', desc=desc, is_slippery=True, render_mode="rgb_array")
-for epsilon in np.linspace(mail["epsilon"]["start"], mail["epsilon"]["end"], mail["epsilon"]["steps"]):
-    for alpha in np.linspace(mail["beta"]["start"], mail["beta"]["end"], mail["beta"]["steps"]):
-        for gamma in np.linspace(mail["gamma"]["start"], mail["gamma"]["end"], mail["gamma"]["steps"]):
-            options = {
-                "epoch_number": epoch_number, 
-                "epsilon": epsilon,
-                "alpha": alpha,
-                "gamma": gamma
-            }
-            for algo in [SARSA, Q_learning]:
-                random.seed(seed)
-                environment.reset(seed=seed)
-                q_sa = algo(environment, **options)
-                deterministic_policy = Policy.buildOptimalPolicyFrom(q_sa)
-                success = 0
-                for epoch in range(test_epoch):
-                    test_agent = Agent(deterministic_policy)
-                    run_static(environment = environment, agent = test_agent)
-                    success += test_agent.current_state_index == (environment.observation_space.n - 1) # type: ignore
-                result.append({
-                    "algorithm": algo.__name__,
-                    "success": success / test_epoch,
-                    "q_sa": q_sa,
+
+#    __  __       _           _                       
+#   |  \/  |     (_)         | |                      
+#   | \  / | __ _ _ _ __     | |     ___   ___  _ __  
+#   | |\/| |/ _` | | '_ \    | |    / _ \ / _ \| '_ \ 
+#   | |  | | (_| | | | | |   | |___| (_) | (_) | |_) |
+#   |_|  |_|\__,_|_|_| |_|   |______\___/ \___/| .__/ 
+#                                              | |    
+#                                              |_|    
+
+
+result = []
+cpt = 0
+for epoch_number in np.linspace(mail["epoch_number"]["start"], mail["epoch_number"]["end"], mail["epoch_number"]["steps"]):
+    for epsilon in np.linspace(mail["epsilon"]["start"], mail["epsilon"]["end"], mail["epsilon"]["steps"]):
+        for alpha in np.linspace(mail["beta"]["start"], mail["beta"]["end"], mail["beta"]["steps"]):
+            for gamma in np.linspace(mail["gamma"]["start"], mail["gamma"]["end"], mail["gamma"]["steps"]):
+                options = {
+                    "epoch_number": int(epoch_number), 
                     "epsilon": epsilon,
                     "alpha": alpha,
                     "gamma": gamma
-                })
-            pass
+                }
+                for algo in [SARSA, Q_learning]:
+                    random.seed(seed)
+                    environment.reset(seed=seed)
+                    q_sa = algo(environment, **options)
+                    deterministic_policy = Policy.buildOptimalPolicyFrom(q_sa)
+                    success = 0
+                    random.seed(seed)
+                    environment.reset(seed=seed)
+                    for epoch in range(test_epoch):
+                        test_agent = Agent(deterministic_policy)
+                        run_static(environment = environment, agent = test_agent)
+                        success += test_agent.current_state_index == (environment.observation_space.n - 1) # type: ignore                   
+                    result.append({
+                        "algorithm": algo.__name__,
+                        "success": success / test_epoch,
+                        "epoch_number": epoch_number,
+                        "epsilon": epsilon,
+                        "alpha": alpha,
+                        "gamma": gamma,
+                        "q_sa": q_sa.tolist() # tolist() required for json dump
+                    })
 
-best_success = result[0]
-result.sort(reverse=True, key = lambda element: element["success"])
-for test in result:
-    if test["success"] > best_success["success"]:
-        best_success = test
-    pass
+                    with open(output_file, 'w') as the_file:
+                        # Serializing json
+                        # Globally, may be faster here
+                        # See https://stackoverflow.com/a/57087055
+                        json_object = json.dumps(result, indent=4)
+                        the_file.write(json_object)
+                    cpt += 1
+                    print(str(cpt) + "/" + str(mail["beta"]["steps"] * mail["gamma"]["steps"] * mail["epsilon"]["steps"] * mail["epoch_number"]["steps"] * 2))
+                pass
 
-# to make plot interactive 
-import matplotlib
-%matplotlib
 
 
-from src.V2.Functions.plot3d_heatmap import draw_3D
-draw_3D(
-    result,
-    x_key="epsilon",
-    y_key="alpha",
-    z_key="gamma",
-    scalar_key="success"
-    )
+
+

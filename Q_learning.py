@@ -5,9 +5,6 @@ from src.V2.Classes.Policy import Policy
 from src.V2.Classes.Agent import Agent
 from src.V2.Functions.epsilon_greedy_policy_factory import make_epsilon_greedy_policy
 
-desc=["SFFF", "FHFH", "FFFH", "HFFG"] # Same as the map called "4*4"
-environment = gym.make('FrozenLake-v1', desc=desc, is_slippery=True, render_mode="rgb_array")
-
 def Q_learning(environment, epsilon = 0.1, alpha = 0.1, gamma = 0.99, epoch_number = 8000):
     # Get the observation space & the action space
     environment_space_length: int = environment.observation_space.n # type: ignore
@@ -19,7 +16,7 @@ def Q_learning(environment, epsilon = 0.1, alpha = 0.1, gamma = 0.99, epoch_numb
         environment_space_length,
         action_space_length
     )
-    def update_Qlearning(policy: Policy, state_index, action_index, next_state, reward: float = 0):
+    def update_Qlearning(agent: Agent, state_index, action_index, next_state, reward: float = 0):
         # Q[s, a] := Q[s, a] + α[r + γ . argmax_a {Q(s', a')} - Q(s, a)]
         best_next_action = np.argmax(Q_sa[next_state, ])
         Q_sa[state_index, action_index] = Q_sa[state_index, action_index] + alpha * (reward + gamma * Q_sa[next_state, best_next_action] - Q_sa[state_index, action_index])

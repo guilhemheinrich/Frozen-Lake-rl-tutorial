@@ -8,7 +8,7 @@ from src.V2.Classes.Policy import Policy
 # See https://github.com/microsoft/pyright/issues/3482
 P = ParamSpec('P')
 class Agent(Generic[P]):
-    def __init__(self, policy: Policy, update_method: Callable[Concatenate[Policy, P], None] | None = None, initial_state_index: int = 0):
+    def __init__(self, policy: Policy, update_method: Callable[Concatenate[Agent, P], None] | None = None, initial_state_index: int = 0):
         self.trajectory: Trajectory = Trajectory()
         self.current_state_index = initial_state_index
         self.policy = policy
@@ -24,5 +24,5 @@ class Agent(Generic[P]):
 
     def update(self, *args: P.args, **kwargs: P.kwargs):
         if self._update_method is not None:
-            return self._update_method(self.policy, *args, **kwargs)
+            return self._update_method(self, *args, **kwargs)
         return None

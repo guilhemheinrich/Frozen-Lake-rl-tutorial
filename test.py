@@ -4,6 +4,7 @@ import gymnasium as gym
 from SARSA import SARSA as SARSA_V2
 from Frozen_Lake_Qlearning import Q_learning as Q_learning_V1
 from Q_learning import Q_learning as Q_learning_V2
+from Monte_Carlo import MC as MC_V2
 from Frozen_Lake_SARSA import SARSA as SARSA_V1
 
 from src.Functions.Run import FrozenLake_parameters, run
@@ -43,6 +44,10 @@ print("\nQ learning V2")
 random.seed(seed)
 environment.reset(seed=seed)
 q_sa4 = Q_learning_V2(environment, **options)
+print("\nMonte-carlo V2")
+random.seed(seed)
+environment.reset(seed=seed)
+q_sa5 = MC_V2(environment, epoch_number = 50000)
 
 
 frozenLake_parameters: FrozenLake_parameters = {'desc' : ["SFFF", "FHFH", "FFFH", "HFFG"], 'is_slippery'  : True}
@@ -97,5 +102,17 @@ for epoch in range(test_epoch):
     test_agent_QL_v2 = Agent(deterministic_policy)
     run_static(environment = environment, agent = test_agent_QL_v2)
     success += test_agent_QL_v2.current_state_index == (environment.observation_space.n - 1) # type: ignore
+print("check random seed: " + str(random.random()))
+print("Success rate: " + str(success/test_epoch))
+
+print("\nQ MC V2")
+success = 0
+random.seed(seed)
+environment.reset(seed=seed)
+deterministic_policy = Policy_V2.buildOptimalPolicyFrom(q_sa5)
+for epoch in range(test_epoch):
+    test_agent_MC_v2 = Agent(deterministic_policy)
+    run_static(environment = environment, agent = test_agent_MC_v2)
+    success += test_agent_MC_v2.current_state_index == (environment.observation_space.n - 1) # type: ignore
 print("check random seed: " + str(random.random()))
 print("Success rate: " + str(success/test_epoch))
