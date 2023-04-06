@@ -10,7 +10,7 @@ from src.V2.Functions.reshape import reshape_one, reshape_order
 from src.V2.Functions.kendall_distance import kendall_matrix_distance
 
 
-output_files = ["data/mc_grid_final.json", "data/fat_grid_2.json"]
+output_files = ["data/fat_grid_2.json"]
 
 results = []
 
@@ -20,7 +20,7 @@ for filename in output_files:
         # results.append(json.loads(the_file.read()))
 
 
-# Tri des résultas
+# Tri des résultats
 results.sort(reverse=True, key = lambda element: element["success"])
 
 # Ajout de "signature de matrice" pour mieux comparer les Q_sa, et ainsi étudier la convergeance
@@ -47,7 +47,6 @@ def filterer(options: Dict):
 #     "success": 0.65
 #     }), results))
 # len(best_success)
-
 
 
 # distance_matrix = np.array(distance_matrix, float)
@@ -96,7 +95,30 @@ def filterer(options: Dict):
 # Plot du succes en fonction des paramètres
 
 big_df = pd.DataFrame(results)
-plot = seaborn.boxplot(data=big_df, x="epoch_number", y="success", hue="algorithm")
+# big_df.melt(id_vars=['alpha', 'gamma', 'algorithm', 'epsilon'], value_vars=['epoch_number', 'success'])
+# seaborn.lineplot(big_df.melt(id_vars=['alpha', 'gamma', 'algorithm', 'epsilon'], value_vars=['epoch_number', 'success']), x='epoch_number', y='success', hue='algorithm')
+# from scipy import stats
+# target_df = pd.DataFrame()
+# target_list = []
+# sub_df = big_df[['alpha', 'gamma', 'algorithm', 'epsilon', 'success', 'epoch_number']]
+# # See https://stackoverflow.com/a/60909312
+# cols = ['algorithm', 'alpha', 'gamma', 'epsilon']
+# for k, d in sub_df.drop(cols, axis=1).groupby([sub_df[c] for c in cols]):
+#     out = d
+#     out["algorithm"] = k[0]
+#     target_list.append(out)
+#     print(np.corrcoef(out["epoch_number"], out["success"])[0, 1])
+#     print(stats.pearsonr(out["epoch_number"], out["success"]))
+# fig, ax = plt.subplots()
+# for line in target_list[0:100]:
+#     seaborn.lineplot(line, x='epoch_number', y='success', hue='algorithm', ax = ax)
+# seaborn.lineplot(out, x='epoch_number', y='success', hue='algorithm', ax = ax)
+# plt.show()
+# seaborn.lineplot(target_df.melt(id_vars=['epoch_number', 'index', 'algorithm']), x='epoch_number', y='value', hue='algorithm')
+
+
+
+plot = seaborn.boxplot(data=big_df, x="epoch_number", y="success", hue="algorithm").tick_params(axis='x', rotation=90)
 plot.tick_params(axis='x', rotation=90)
 plot.figure
 
@@ -110,6 +132,9 @@ seaborn.boxplot(big_df, x = "epoch_number", y= "success", hue='algorithm').tick_
 
 seaborn.pairplot(big_df, hue='algorithm', height=2.5)
 
+## Meiux voir les densités
+#https://seaborn.pydata.org/tutorial/distributions.html
+
 # Avec un peu de filtre
 
 sub_results = list(filter(
@@ -118,10 +143,29 @@ sub_results = list(filter(
         results
 ))
 
-big_df = pd.DataFrame(sub_results)
-seaborn.lineplot(big_df, x = "epoch_number", y= "success", hue='algorithm')
+better_df = pd.DataFrame(sub_results)
 
-seaborn.jointplot(big_df, x = "epoch_number", y= "success", kind='kde')
+target_df = pd.DataFrame()
+target_list = []
+sub_df = better_df[['alpha', 'gamma', 'algorithm', 'epsilon', 'success', 'epoch_number']]
+# See https://stackoverflow.com/a/60909312
+cols = ['algorithm', 'alpha', 'gamma', 'epsilon']
+for k, d in sub_df.drop(cols, axis=1).groupby([sub_df[c] for c in cols]):
+    out = d
+    out["algorithm"] = k[0]
+    target_list.append(out)
+
+fig, ax = plt.subplots()
+for line in target_list[0:100]:
+    seaborn.lineplot(line, x='epoch_number', y='success', ax = ax)
+
+
+
+better_df.filter(like = "SARSA", axis = 1)
+sum(better_df["algorithm"=="SARSA"])
+seaborn.lineplot(better_df, x = "epoch_number", y= "success", hue='algorithm')
+
+seaborn.jointplot(better_df, x = "epoch_number", y= "success", kind='kde')
 
 # On veut voir si ces solutions sont "semblables"
 
