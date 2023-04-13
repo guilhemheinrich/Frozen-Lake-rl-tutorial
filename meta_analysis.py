@@ -95,26 +95,25 @@ def filterer(options: Dict):
 # Plot du succes en fonction des paramètres
 
 big_df = pd.DataFrame(results)
-# big_df.melt(id_vars=['alpha', 'gamma', 'algorithm', 'epsilon'], value_vars=['epoch_number', 'success'])
-# seaborn.lineplot(big_df.melt(id_vars=['alpha', 'gamma', 'algorithm', 'epsilon'], value_vars=['epoch_number', 'success']), x='epoch_number', y='success', hue='algorithm')
-# from scipy import stats
-# target_df = pd.DataFrame()
-# target_list = []
-# sub_df = big_df[['alpha', 'gamma', 'algorithm', 'epsilon', 'success', 'epoch_number']]
-# # See https://stackoverflow.com/a/60909312
-# cols = ['algorithm', 'alpha', 'gamma', 'epsilon']
-# for k, d in sub_df.drop(cols, axis=1).groupby([sub_df[c] for c in cols]):
-#     out = d
-#     out["algorithm"] = k[0]
-#     target_list.append(out)
-#     print(np.corrcoef(out["epoch_number"], out["success"])[0, 1])
-#     print(stats.pearsonr(out["epoch_number"], out["success"]))
-# fig, ax = plt.subplots()
-# for line in target_list[0:100]:
-#     seaborn.lineplot(line, x='epoch_number', y='success', hue='algorithm', ax = ax)
-# seaborn.lineplot(out, x='epoch_number', y='success', hue='algorithm', ax = ax)
-# plt.show()
-# seaborn.lineplot(target_df.melt(id_vars=['epoch_number', 'index', 'algorithm']), x='epoch_number', y='value', hue='algorithm')
+from scipy import stats
+target_df = pd.DataFrame()
+target_list = []
+sub_df = big_df[['alpha', 'gamma', 'algorithm', 'epsilon', 'success', 'epoch_number']]
+# See https://stackoverflow.com/a/60909312
+cols = ['algorithm', 'alpha', 'gamma', 'epsilon']
+for k, d in sub_df.drop(cols, axis=1).groupby([sub_df[c] for c in cols]):
+    out = d
+    out["algorithm"] = k[0]
+    out["param"] = ",".join([str(i) for i in k])
+    out.sort_values("epoch_number", ascending = True, inplace = True)
+    target_list.append(out)
+    # print(np.corrcoef(out["epoch_number"], out["success"])[0, 1])
+    # print(stats.pearsonr(out["epoch_number"], out["success"]))
+fig, ax = plt.subplots()
+for line in target_list[0:100]:
+    seaborn.lineplot(line, x='epoch_number', y='success', hue='algorithm', ax = ax)
+plt.show()
+seaborn.lineplot(target_df.melt(id_vars=['epoch_number', 'index', 'algorithm']), x='epoch_number', y='value', hue='algorithm')
 
 
 
@@ -153,6 +152,7 @@ cols = ['algorithm', 'alpha', 'gamma', 'epsilon']
 for k, d in sub_df.drop(cols, axis=1).groupby([sub_df[c] for c in cols]):
     out = d
     out["algorithm"] = k[0]
+    out["param"] = ",".join([str(i) for i in k])
     target_list.append(out)
 
 fig, ax = plt.subplots()
