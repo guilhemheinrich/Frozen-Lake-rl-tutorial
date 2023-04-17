@@ -23,6 +23,7 @@ for filename in output_files:
 # Tri des résultats
 results.sort(reverse=True, key = lambda element: element["success"])
 
+
 # Ajout de "signature de matrice" pour mieux comparer les Q_sa, et ainsi étudier la convergeance
 for result in results:
     result["reshape_one"] = reshape_one(np.asarray(result["q_sa"]))

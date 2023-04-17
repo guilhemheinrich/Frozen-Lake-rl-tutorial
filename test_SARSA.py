@@ -12,8 +12,8 @@ environment = gym.make('FrozenLake-v1', desc=desc, is_slippery=True, render_mode
 
 test_epoch = 1000
 options = {
-    "warmup_epoch": 5000,
-    "maximum_epoch": 3000,
+    "warmup_epoch": 3000,
+    "maximum_epoch": 150000,
     "epsilon": 0.2,
     "alpha": 0.1,
     "gamma": 0.99
