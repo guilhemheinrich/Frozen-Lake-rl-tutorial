@@ -4,7 +4,7 @@ from nptyping import Float, NDArray, Shape
 import numpy as np
 import json
 
-from Monte_Carlo import MC
+from src.V2.Algorithms.Monte_Carlo import MC
 
 from src.V2.Classes.Policy import Policy
 from src.V2.Classes.Agent import Agent

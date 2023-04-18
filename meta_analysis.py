@@ -108,10 +108,8 @@ for k, d in sub_df.drop(cols, axis=1).groupby([sub_df[c] for c in cols]):
     out["param"] = ",".join([str(i) for i in k])
     out.sort_values("epoch_number", ascending = True, inplace = True)
     target_list.append(out)
-    # print(np.corrcoef(out["epoch_number"], out["success"])[0, 1])
-    # print(stats.pearsonr(out["epoch_number"], out["success"]))
 fig, ax = plt.subplots()
-for line in target_list[0:100]:
+for line in target_list[0:10]:
     seaborn.lineplot(line, x='epoch_number', y='success', hue='algorithm', ax = ax)
 plt.show()
 seaborn.lineplot(target_df.melt(id_vars=['epoch_number', 'index', 'algorithm']), x='epoch_number', y='value', hue='algorithm')

@@ -1,11 +1,11 @@
 import random
 import gymnasium as gym
 
-from SARSA import SARSA as SARSA_V2
-from Frozen_Lake_Qlearning import Q_learning as Q_learning_V1
-from Q_learning import Q_learning as Q_learning_V2
-from Monte_Carlo import MC as MC_V2
-from Frozen_Lake_SARSA import SARSA as SARSA_V1
+from src.V2.Algorithms.SARSA import SARSA as SARSA_V2
+from src.V2.Algorithms.Q_learning import Q_learning as Q_learning_V2
+from src.V2.Algorithms.Monte_Carlo import MC as MC_V2
+from src.Algorithms.Frozen_Lake_Qlearning import Q_learning as Q_learning_V1
+from src.Algorithms.Frozen_Lake_SARSA import SARSA as SARSA_V1
 
 from src.Functions.Run import FrozenLake_parameters, run
 from src.Classes.Policy import Policy as Policy_V1

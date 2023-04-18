@@ -2,44 +2,35 @@ import gymnasium as gym
 import numpy as np
 from nptyping import Float, NDArray, Shape
 
-from src.V2.Functions.reshape import reshape_one
 from src.V2.Classes.Policy import Policy
 from src.V2.Classes.Agent import Agent
 from src.V2.Functions.epsilon_greedy_policy_factory import make_epsilon_greedy_policy
 
-def Q_learning(environment, epsilon = 0.1, alpha = 0.1, gamma = 0.99, warmup_epoch = 500, maximum_epoch = 15000):
+def Q_learning(environment, epsilon_decay = 0.01, alpha = 0.1, gamma = 0.99, epoch_number = 5000):
     # Get the observation space & the action space
     environment_space_length: int = environment.observation_space.n # type: ignore
     action_space_length: int = environment.action_space.n # type: ignore
     Q_sa = np.zeros((environment_space_length, action_space_length))
 
-    epsilon_greedy_policy = Policy(
-        make_epsilon_greedy_policy(epsilon = epsilon, Q_sa = Q_sa),
-        environment_space_length,
-        action_space_length
-    )
+
     def update_Qlearning(agent: Agent, state_index, action_index, next_state, reward: float = 0):
         # Q[s, a] := Q[s, a] + α[r + γ . argmax_a {Q(s', a')} - Q(s, a)]
         best_next_action = np.argmax(Q_sa[next_state, ])
         Q_sa[state_index, action_index] = Q_sa[state_index, action_index] + alpha * (reward + gamma * Q_sa[next_state, best_next_action] - Q_sa[state_index, action_index])
 
 
-    learning_agent = Agent(epsilon_greedy_policy, update_Qlearning)
 
-    for epoch in range(warmup_epoch):
+    epsilon = 1
+    for epoch in range(epoch_number):
+        epsilon_greedy_policy = Policy(
+        make_epsilon_greedy_policy(epsilon = epsilon, Q_sa = Q_sa),
+        environment_space_length,
+        action_space_length
+    )
+        learning_agent = Agent(epsilon_greedy_policy, update_Qlearning)
         core_loop(environment, learning_agent)
+        epsilon = epsilon * (1 - epsilon_decay)
 
-    converged = False
-    difference_list = []
-    previous_shape = reshape_one(Q_sa)
-    loop = 0
-    while not converged and loop < maximum_epoch:
-        print("loop" + str(loop))
-        core_loop(environment, learning_agent)
-        converged = has_converged(Q_sa, previous_shape, difference_list)
-        previous_shape = reshape_one(Q_sa)
-        loop += 1
-        pass
     return Q_sa
 
 

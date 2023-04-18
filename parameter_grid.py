@@ -3,8 +3,8 @@ import gymnasium as gym
 import numpy as np
 import json
 
-from SARSA import SARSA
-from Q_learning import Q_learning
+from src.V2.Algorithms.SARSA import SARSA
+from src.V2.Algorithms.Q_learning import Q_learning
 
 from src.V2.Classes.Policy import Policy
 from src.V2.Classes.Agent import Agent

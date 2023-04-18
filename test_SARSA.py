@@ -1,7 +1,7 @@
 import random
 import gymnasium as gym
 
-from SARSA_controlled import SARSA
+from src.V2.Algorithms.SARSA_controlled import SARSA
 from src.V2.Classes.Policy import Policy as Policy_V2
 from src.V2.Classes.Agent import Agent
 from src.V2.Functions.run import run_static

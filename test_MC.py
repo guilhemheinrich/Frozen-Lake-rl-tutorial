@@ -1,7 +1,8 @@
 import random
 import gymnasium as gym
 
-from Monte_Carlo_controlled import MC
+from src.V2.Algorithms.Monte_Carlo_controlled import MC
+# from src.V2.Algorithms.Monte_Carlo import MC
 from src.V2.Classes.Policy import Policy as Policy_V2
 from src.V2.Classes.Agent import Agent
 from src.V2.Functions.run import run_static
@@ -12,11 +13,13 @@ environment = gym.make('FrozenLake-v1', desc=desc, is_slippery=True, render_mode
 
 test_epoch = 1000
 options = {
-    "warmup_epoch": 30000,
-    "maximum_epoch": 150000,
+    "warmup_epoch": 3003,
+    "maximum_epoch": 3000,
     "epsilon": 0.2
 }
-
+# options = {
+#     "epoch_number": 30000
+# }
 q_sa = MC(environment, **options)
 
 deterministic_policy = Policy_V2.buildOptimalPolicyFrom(q_sa)
