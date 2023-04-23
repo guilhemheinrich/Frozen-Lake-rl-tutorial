@@ -23,7 +23,7 @@ options = {
 
 q_sa = Q_learning_controlled(environment, **options)
 
-deterministic_policy = Policy_V2.buildOptimalPolicyFrom(q_sa)
+deterministic_policy = Policy_V2.buildOptimalPolicyFrom(q_sa["Q_sa"])
 success = 0
 for epoch in range(test_epoch):
     test_agent_v1 = Agent(deterministic_policy, initial_state_index = 0)

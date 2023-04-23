@@ -24,6 +24,8 @@ def MC(environment, epsilon, warmup_epoch = 500, maximum_epoch = 15000):
         final_value = agent.trajectory.steps[-1].reward
         already_visited = np.full((environment_space_length, action_space_length), False)
         for step in agent.trajectory.steps:
+            print("already_visited[step.state, step.action]")
+            print(already_visited[step.state, step.action])
             if already_visited[step.state, step.action]: continue
             increment = incremental_counter[step.state, step.action]
             old_value = Q_sa[step.state, step.action]
@@ -33,6 +35,7 @@ def MC(environment, epsilon, warmup_epoch = 500, maximum_epoch = 15000):
             
     learning_agent = Agent(epsilon_greedy_policy, update_MC)
     for epoch in range(warmup_epoch):
+        print("EPOCH " + str(epoch))
         core_loop(environment, learning_agent)
         learning_agent.update()
 
@@ -47,7 +50,11 @@ def MC(environment, epsilon, warmup_epoch = 500, maximum_epoch = 15000):
         converged = has_converged(Q_sa, previous_shape, difference_list)
         previous_shape = reshape_one(Q_sa)
         loop += 1
-    return Q_sa
+    return {
+        "Q_sa": Q_sa,
+        "total_epoch": warmup_epoch + loop,
+        "convergence_attained": converged
+    }
 
 def core_loop(environment, learning_agent):
     learning_agent.current_state_index = environment.reset()[0] # Initial state

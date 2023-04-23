@@ -28,10 +28,11 @@ def MC(environment, epoch_number = 8000):
             Q_sa[step.state, step.action]= (increment * old_value + final_value) / incremental_counter[step.state, step.action]
             
     
+    learning_agent = Agent(random_policy, update_MC)
+    
     for epoch in range(epoch_number):
         stop = False
         environment.reset()
-        learning_agent = Agent(random_policy, update_MC)
         learning_agent.current_state_index = environment.reset()[0] # Initial state
         action = learning_agent.pick_next()
         while not stop:

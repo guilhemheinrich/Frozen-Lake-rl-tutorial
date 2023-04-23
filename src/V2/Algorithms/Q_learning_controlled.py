@@ -39,8 +39,11 @@ def Q_learning(environment, epsilon = 0.1, alpha = 0.1, gamma = 0.99, warmup_epo
         converged = has_converged(Q_sa, previous_shape, difference_list)
         previous_shape = reshape_one(Q_sa)
         loop += 1
-        pass
-    return Q_sa
+    return {
+        "Q_sa": Q_sa,
+        "total_epoch": warmup_epoch + loop,
+        "convergence_attained": converged
+    }
 
 
 def core_loop(environment, learning_agent):

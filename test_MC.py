@@ -13,16 +13,16 @@ environment = gym.make('FrozenLake-v1', desc=desc, is_slippery=True, render_mode
 
 test_epoch = 1000
 options = {
-    "warmup_epoch": 3003,
+    "warmup_epoch": 300,
     "maximum_epoch": 3000,
-    "epsilon": 0.2
+    "epsilon": 0.5
 }
 # options = {
 #     "epoch_number": 30000
 # }
 q_sa = MC(environment, **options)
 
-deterministic_policy = Policy_V2.buildOptimalPolicyFrom(q_sa)
+deterministic_policy = Policy_V2.buildOptimalPolicyFrom(q_sa["Q_sa"])
 success = 0
 for epoch in range(test_epoch):
     test_agent_v1 = Agent(deterministic_policy, initial_state_index = 0)

@@ -21,10 +21,10 @@ options = {
 
 q_sa = SARSA(environment, **options)
 
-deterministic_policy = Policy_V2.buildOptimalPolicyFrom(q_sa)
+deterministic_policy = Policy_V2.buildOptimalPolicyFrom(q_sa["Q_sa"])
 success = 0
+test_agent_v1 = Agent(deterministic_policy, initial_state_index = 0)
 for epoch in range(test_epoch):
-    test_agent_v1 = Agent(deterministic_policy, initial_state_index = 0)
     run_static(environment, test_agent_v1)
-    success += test_agent_v1.current_state_index == (environment.observation_space.n - 1) 
+    success += test_agent_v1.current_state_index == (environment.observation_space.n - 1)  # type: ignore
 print("Success rate: " + str(success/test_epoch))
